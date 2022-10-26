@@ -21,7 +21,12 @@ class Feature(models.Model):
         return self.name
 
 
+class ResUser(models.Model):
+    name = models.CharField(max_length=300, null=True, blank=True)
+    email = models.CharField(max_length=300, null=True, blank=True)
+
+
 class Feedback(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user_id = models.ForeignKey(ResUser, on_delete=models.CASCADE, null=True, blank=True)
     description = models.CharField(max_length=300)
     feature_id = models.ForeignKey(Feature, on_delete=models.CASCADE, null=True, blank=True)

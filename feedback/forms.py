@@ -2,7 +2,7 @@ from tkinter import Widget
 
 from django import forms
 
-from .models import Feature, Feedback, Tag
+from .models import Feature, Feedback, ResUser, Tag
 
 
 class FeatureForm(forms.ModelForm):
@@ -13,12 +13,7 @@ class FeatureForm(forms.ModelForm):
         )
         model = Feature
 
-    def __init__(self, *args, **kwargs):
-        res = super(FeatureForm, self).__init__(*args, **kwargs)
-        if kwargs.get("initial"):
-            self.fields["tag_ids"].queryset = Tag.objects.all()
-            self.fields["tag_ids"].widget.attrs.update({"class": "form-control widget-many2many-tags"})
-        return res
+        tag_ids = forms.ModelMultipleChoiceField(queryset=Tag.objects.all())
 
 
 class TagForm(forms.ModelForm):
@@ -28,3 +23,12 @@ class TagForm(forms.ModelForm):
             "color",
         )
         model = Tag
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        fields = (
+            "name",
+            "email",
+        )
+        model = ResUser

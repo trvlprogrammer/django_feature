@@ -2,28 +2,28 @@
 {% load widget_tweaks %}
 
 {% block page_title %}
-Features
+Users
 {% endblock page_title %}
 
 {% block contents %}
 
 <div id="feature-list">
-    <h1>All Features (Count of Features)</h1>
+    <h1>All Users (Count of users)</h1>
     <div>
-        <button id="" type="button" class="btn btn-outline-info float-end" hx-get="{% url 'feedback:feature-create' %}"
+        <button id="" type="button" class="btn btn-outline-info float-end" hx-get="{% url 'feedback:user-create' %}"
             hx-target="#dialog">
-            Create Feature
+            Create User
         </button>
     </div>
     <table class="table table-striped">
         <thead>
             <tr>
-                <th colspan="10">Name</th>
-                <th colspan="2">Total Feedback</th>
+                <th colspan="5">Name</th>
+                <th colspan="5">Email</th>
+                <th colspan="2">Features</th>
             </tr>
         </thead>
-        <tbody hx-get="{% url 'feedback:feature-list' %}" hx-trigger="load, featureListChanged from:body"
-            hx-target="this">
+        <tbody hx-get="{% url 'feedback:user-list' %}" hx-trigger="load, userListChanged from:body" hx-target="this">
         </tbody>
     </table>
 </div>

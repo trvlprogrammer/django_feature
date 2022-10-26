@@ -1,24 +1,11 @@
-.button-active::after {
-    content: "Active";
-}
-
-.button-active:hover::after {
-    content: "Inactive";
-}
-
-.button-inactive::after {
-    content: "Inactive";
-}
-
-.button-inactive:hover::after {
-    content: "Active";
-}
-
-
 .unstyled-button {
     border: none;
     padding: 0;
     background: none;
     color: blue;
     text-decoration: underline;
+}
+
+.many2many-box {
+    min-width: 250px;
 }

@@ -4,7 +4,8 @@
         {{feature.name}}
         (<button hx-get="{% url 'feedback:feature-update' feature.id %}" hx-target="#dialog"
             class="unstyled-button">edit</button>)
-        (+<a href="#" data-bs-target="#add_tags_feature_modal" data-bs-toggle="modal">tags</a>)
+        (+<button hx-get="{% url 'feedback:feature-tag-update' feature.id %}" hx-target="#dialog"
+            class="unstyled-button">tags</button>)
         (+<a href="#">feedback</a>)
         </th>
     <td colspan="2">{{feature.total_feedback}}</td>

@@ -1,0 +1,12 @@
+{% for user in users %}
+<tr>
+    <td colspan="5">
+        {{user.name}}
+        (<button hx-get="{% url 'feedback:user-update' user.id %}" hx-target="#dialog"
+            class="unstyled-button">edit</button>)
+        </th>
+    <td colspan="5">{{user.email}}</td>
+    <td colspan="2">0</td>
+
+</tr>
+{% endfor %}

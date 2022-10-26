@@ -18,4 +18,6 @@ urlpatterns = [
     path("user/list", views.user_list, name="user-list"),
     path("user/create", views.create_user, name="user-create"),
     path("user/<pk>/update/", views.update_user, name="user-update"),
+    path("feedback/create/<pk>", views.create_feedback, name="feedback-create"),
+    path("features/<pk>", views.get_feedbacks, name="feedbacks"),
 ]

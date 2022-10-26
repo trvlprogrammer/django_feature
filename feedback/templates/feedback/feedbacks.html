@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% load widget_tweaks %}
+
+{% block page_title %}
+Feedback
+{% endblock page_title %}
+
+{% block contents %}
+
+<div>
+    <h1>Feedback for {{feature.name}} ({{count}})</h1>
+    {% for feedback in feedbacks %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <div>
+                {{ feedback.description }}
+            </div>
+            <div>
+                {{ feedback.user_id.name }} | {{ feedback.user_id.email }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="modal" class="modal fade" tabindex="-1">
+    <div id="dialog" class="modal-dialog" hx-target="this"></div>
+</div>
+
+
+{% endblock contents %}

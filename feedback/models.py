@@ -25,8 +25,11 @@ class ResUser(models.Model):
     name = models.CharField(max_length=300, null=True, blank=True)
     email = models.CharField(max_length=300, null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.name} ({self.email})"
+
 
 class Feedback(models.Model):
     user_id = models.ForeignKey(ResUser, on_delete=models.CASCADE, null=True, blank=True)
-    description = models.CharField(max_length=300)
+    description = models.TextField()
     feature_id = models.ForeignKey(Feature, on_delete=models.CASCADE, null=True, blank=True)

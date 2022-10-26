@@ -32,3 +32,11 @@ class UserForm(forms.ModelForm):
             "email",
         )
         model = ResUser
+
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        fields = ("user_id", "description", "feature_id")
+        widgets = {"description": forms.Textarea(attrs={"rows": 3, "cols": 10})}
+        model = Feedback
+        # description = forms.CharField(widget=forms.Textarea(attrs={"rows": 3, "cols": 10}))

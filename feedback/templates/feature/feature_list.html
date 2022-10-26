@@ -2,13 +2,19 @@
 <tr>
     <td colspan="10">
         {{feature.name}}
+        {% for tag in feature.tag_ids.all %}
+        <span class="">[{{tag.name}}]</span>
+        {% endfor %}
         (<button hx-get="{% url 'feedback:feature-update' feature.id %}" hx-target="#dialog"
             class="unstyled-button">edit</button>)
         (+<button hx-get="{% url 'feedback:feature-tag-update' feature.id %}" hx-target="#dialog"
             class="unstyled-button">tags</button>)
-        (+<a href="#">feedback</a>)
+        (+<button hx-get="{% url 'feedback:feedback-create' feature.id %}" hx-target="#dialog"
+            class="unstyled-button">feedback</button>)
         </th>
-    <td colspan="2">{{feature.total_feedback}}</td>
+    <td colspan="2">
+        <a href="{% url 'feedback:feedbacks' feature.id %}">{{feature.count_data}}</a>
+    </td>
 
 </tr>
 {% endfor %}

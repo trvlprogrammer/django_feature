@@ -1,7 +1,8 @@
+from django.db import connection
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
-from .forms import FeatureForm, TagForm, UserForm
+from .forms import FeatureForm, FeedbackForm, TagForm, UserForm
 from .models import Feature, Feedback, ResUser, Tag
 
 
@@ -9,8 +10,35 @@ def features(request):
     return render(request, "feature/features.html")
 
 
+def dictfetchall(cursor):
+    "Returns all rows from a cursor as a dict"
+    desc = cursor.description
+    return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
+
+
 def feature_list(request):
-    return render(request, "feature/feature_list.html", {"features": Feature.objects.all()})
+    query = """
+        SELECT ff.id,
+        CASE 
+        WHEN x.count_data THEN x.count_data
+        ELSE 0
+        END AS count_data
+        FROM feedback_feature AS ff
+        LEFT JOIN(
+            SELECT  COUNT(*) AS count_data, feature_id_id FROM feedback_feedback
+            GROUP BY feature_id_id
+        )x on ff.id = x.feature_id_id
+    """
+
+    cursor = connection.cursor()
+    cursor.execute(query)
+    data = dictfetchall(cursor)
+    features = []
+    for d in data:
+        obj = Feature.objects.get(pk=d["id"])
+        obj.count_data = d["count_data"]
+        features.append(obj)
+    return render(request, "feature/feature_list.html", {"features": features, "querys": data})
 
 
 def create_feature(request):
@@ -169,4 +197,36 @@ def update_user(request, pk):
         request,
         "user/user_form.html",
         {"form": form, "header": "Edit User", "button": "Edit User"},
+    )
+
+
+def create_feedback(request, pk):
+    feature = get_object_or_404(Feature, pk=pk)
+    if request.method == "POST":
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.feature_id = feature
+            instance.save()
+            return HttpResponse(
+                status=204,
+                headers={"HX-Trigger": "featureListChanged"},
+            )
+    else:
+        form = FeedbackForm(initial={"feature_id": feature})
+    return render(
+        request,
+        "feedback/feedback_form.html",
+        {"form": form, "header": "Create Feedback", "button": "Create Feedback"},
+    )
+
+
+def get_feedbacks(request, pk):
+    feedbacks = Feedback.objects.filter(feature_id=pk)
+    feature = Feature.objects.get(pk=pk)
+    count = feedbacks.count()
+    return render(
+        request,
+        "feedback/feedbacks.html",
+        {"feedbacks": feedbacks, "feature": feature, "count": count},
     )

@@ -1,0 +1,11 @@
+{% for tag in tags %}
+<tr>
+    <td colspan="10">
+        {{tag.name}}
+        (<button hx-get="{% url 'feedback:feature-update' tag.id %}" hx-target="#dialog"
+            class="unstyled-button">edit</button>)
+        </th>
+    <td colspan="2">0</td>
+
+</tr>
+{% endfor %}

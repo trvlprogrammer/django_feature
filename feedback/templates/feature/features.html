@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% load widget_tweaks %}
+
+{% block page_title %}
+Features
+{% endblock page_title %}
+
+{% block contents %}
+
+<div id="feature-list">
+    <h1>All Features (Count of Features)</h1>
+    <div>
+        <button id="" type="button" class="btn btn-outline-info float-end" hx-get="{% url 'feedback:feature-create' %}"
+            hx-target="#dialog">
+            Create Feature
+        </button>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th colspan="10">Name</th>
+                <th colspan="2">Total Feedback</th>
+            </tr>
+        </thead>
+        <tbody hx-get="{% url 'feedback:feature-list' %}" hx-trigger="load, movieListChanged from:body"
+            hx-target="this">
+        </tbody>
+    </table>
+</div>
+
+<div id="modal" class="modal fade">
+    <div id="dialog" class="modal-dialog" hx-target="this"></div>
+</div>
+
+
+{% endblock contents %}

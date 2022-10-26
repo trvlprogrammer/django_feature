@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+<header>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="{%url 'feedback:features'%}">Features</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{%url 'feedback:tags'%}">Tags</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Users</a>
+      </li>
+    </ul>
+  </nav>
+
+</header>
+
+{% endblock %}

@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from django.db import connection
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -210,10 +212,10 @@ def update_tag(request, pk):
 
 
 def users(request):
-    return render(request, "user/users.html")
+    return render(request, "user/users.html", {"state": "asc"})
 
 
-def user_list(request):
+def user_list(request, state):
     query = """
         SELECT fr.id , fr.name, fr.email,
         CASE
@@ -231,7 +233,12 @@ def user_list(request):
     cursor.execute(query)
     data = dictfetchall(cursor)
     cursor.close()
-    return render(request, "user/user_list.html", {"users": data, "count_data": len(data)})
+    if state == "desc":
+        newlist = sorted(data, key=itemgetter("count_data"))
+    else:
+        state = "asc"
+        newlist = sorted(data, key=itemgetter("count_data"), reverse=True)
+    return render(request, "user/user_list.html", {"users": newlist, "count_data": len(data), "state": state})
 
 
 def create_user(request):

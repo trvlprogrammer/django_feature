@@ -7,7 +7,7 @@ Users
 
 {% block contents %}
 <a href="{{ request.META.HTTP_REFERER }}">Back</a>
-<div hx-get="{% url 'feedback:user-list' %}" hx-trigger="load, userListChanged from:body" hx-target="this">
+<div hx-get="{% url 'feedback:user-list' state %}" hx-trigger="load, userListChanged from:body" hx-target="this">
 
 </div>
 

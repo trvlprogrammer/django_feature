@@ -8,14 +8,15 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th colspan="5" class="col-5">Name</th>
-            <th colspan="5" class="col-5">Email</th>
-            <th colspan="2" class="col-2">Features
+            <th colspan="5" class="col-5">Name
                 {% if state == "asc" %}
                 <a href="#" hx-get="{% url 'feedback:user-list' 'desc' %}">Sort</a>
                 {% else %}
                 <a href="#" hx-get="{% url 'feedback:user-list' 'asc' %}">Sort</a>
                 {% endif %}
+            </th>
+            <th colspan="5" class="col-5">Email</th>
+            <th colspan="2" class="col-2">Features
             </th>
         </tr>
     </thead>

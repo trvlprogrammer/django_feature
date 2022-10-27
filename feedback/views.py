@@ -241,10 +241,10 @@ def user_list(request, state):
     data = dictfetchall(cursor)
     cursor.close()
     if state == "desc":
-        newlist = sorted(data, key=itemgetter("count_data"), reverse=True)
+        newlist = sorted(data, key=itemgetter("name"), reverse=True)
     else:
         state = "asc"
-        newlist = sorted(data, key=itemgetter("count_data"))
+        newlist = sorted(data, key=itemgetter("name"))
     return render(request, "user/user_list.html", {"users": newlist, "count_data": len(data), "state": state})
 
 

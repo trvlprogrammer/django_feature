@@ -126,7 +126,7 @@ def get_feature_by_tag(request, pk):
 
 def list_feature_by_tag(request, pk, state):
     features = Feature.objects.filter(tag_ids=pk).prefetch_related("tag_ids")
-
+    tag = Tag.objects.get(pk=pk)
     feature_objs = []
     for f in features:
         f.count_data = Feedback.objects.filter(feature_id=f).count()
@@ -147,6 +147,7 @@ def list_feature_by_tag(request, pk, state):
             "state": state,
             "access_by": "tag",
             "id": pk,
+            "tag": tag,
         },
     )
 

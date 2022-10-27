@@ -1,4 +1,7 @@
 <h1>{{header}} ({{count_data}})</h1>
+{% if access_by == "tag" %}
+<h5>Filter by tag "{{tag.name}}" (<a href="{% url 'feedback:features' %}">clear filter</a>)</h5>
+{% endif %}
 <div>
     <button id="" type="button" class="btn btn-outline-info float-end" hx-get="{% url 'feedback:feature-create' %}"
         hx-target="#dialog">

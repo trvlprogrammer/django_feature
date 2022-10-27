@@ -1,12 +1,32 @@
-{% for user in users %}
-<tr>
-    <td colspan="5">
-        {{user.name}}
-        (<button hx-get="{% url 'feedback:user-update' user.id %}" hx-target="#dialog"
-            class="unstyled-button">edit</button>)
-        </th>
-    <td colspan="5">{{user.email}}</td>
-    <td colspan="2">0</td>
+<h1>All Users ({{count_data}})</h1>
+<div>
+    <button id="" type="button" class="btn btn-outline-info float-end" hx-get="{% url 'feedback:user-create' %}"
+        hx-target="#dialog">
+        Create User
+    </button>
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th colspan="5">Name</th>
+            <th colspan="5">Email</th>
+            <th colspan="2">Features</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td colspan="5">
+                {{user.name}}
+                (<button hx-get="{% url 'feedback:user-update' user.id %}" hx-target="#dialog"
+                    class="unstyled-button">edit</button>)
+                </th>
+            <td colspan="5">{{user.email}}</td>
+            <td colspan="2">
+                <a href="{% url 'feedback:feature-by-user' user.id %}">{{user.count_data}}</a>
+            </td>
 
-</tr>
-{% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

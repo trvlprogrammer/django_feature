@@ -15,7 +15,6 @@ class Tag(models.Model):
 class Feature(models.Model):
     name = models.CharField(max_length=300)
     tag_ids = models.ManyToManyField(Tag, blank=True)
-    total_feedback = models.IntegerField(null=True, blank=True, default=0)
 
     def __str__(self):
         return self.name

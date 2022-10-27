@@ -6,29 +6,9 @@ Tags
 {% endblock page_title %}
 
 {% block contents %}
+<a href="{{ request.META.HTTP_REFERER }}">Back</a>
+<div hx-get="{% url 'feedback:tag-list' %}" hx-trigger="load, tagListChanged from:body" hx-target="this">
 
-<div>
-    <h1>All Tags (Count of Tags)</h1>
-    <div>
-        <button id="" type="button" class="btn btn-outline-info float-end" hx-get="{% url 'feedback:tag-create' %}"
-            hx-target="#dialog">
-            Create Tag
-        </button>
-    </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th colspan="10">Name</th>
-                <th colspan="2">Total Tagged Features</th>
-            </tr>
-        </thead>
-        <tbody hx-get="{% url 'feedback:tag-list' %}" hx-trigger="load, tagListChanged from:body" hx-target="this">
-        </tbody>
-    </table>
-</div>
-
-<div id="modal" class="modal fade" tabindex="-1">
-    <div id="dialog" class="modal-dialog" hx-target="this"></div>
 </div>
 
 

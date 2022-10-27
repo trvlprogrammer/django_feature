@@ -6,9 +6,15 @@ Feedback
 {% endblock page_title %}
 
 {% block contents %}
-
+<a href="{{ request.META.HTTP_REFERER }}">Back</a>
 <div>
     <h1>Feedback for {{feature.name}} ({{count}})</h1>
+    <div class="mb-3 mt-2">
+        {% for tag in feature.tag_ids.all %}
+        <a href="{% url 'feedback:feature-by-tag' tag.id %}">[{{tag.name}}]</a>
+        {% endfor %}
+    </div>
+
     {% for feedback in feedbacks %}
     <div class="card mb-2">
         <div class="card-body">
@@ -22,10 +28,5 @@ Feedback
     </div>
     {% endfor %}
 </div>
-
-<div id="modal" class="modal fade" tabindex="-1">
-    <div id="dialog" class="modal-dialog" hx-target="this"></div>
-</div>
-
 
 {% endblock contents %}

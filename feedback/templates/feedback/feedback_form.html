@@ -19,19 +19,13 @@
             <label for="{{ form.user_id.id_for_label }}" class="form-label">User</label>
             {% render_field form.user_id class="form-control" placeholder="Feedback" %}
         </div>
-    </div>
-    <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">{{button}}</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Cancel
-        </button>
+
+        <div class="mb-3 float-start">
+            <button type="submit" class="btn btn-primary">{{button}}</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                Cancel
+            </button>
+        </div>
     </div>
 </form>
 {% endwith %}
-
-<script src="{% static 'js/widget.js' %}"></script>
-<script>
-    $('.widget-many2many-tags').select2({
-        dropdownParent: $('#modal')
-    });
-</script>

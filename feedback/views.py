@@ -2,18 +2,18 @@ from django.db import connection
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
-from .forms import FeatureForm, FeedbackForm, TagForm, UserForm
+from .forms import FeatureEditForm, FeatureForm, FeedbackForm, TagForm, UserForm
 from .models import Feature, Feedback, ResUser, Tag
-
-
-def features(request):
-    return render(request, "feature/features.html")
 
 
 def dictfetchall(cursor):
     "Returns all rows from a cursor as a dict"
     desc = cursor.description
     return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
+
+
+def features(request):
+    return render(request, "feature/features.html", {"access_by": "index"})
 
 
 def feature_list(request):
@@ -33,12 +33,21 @@ def feature_list(request):
     cursor = connection.cursor()
     cursor.execute(query)
     data = dictfetchall(cursor)
+    cursor.close()
     features = []
     for d in data:
         obj = Feature.objects.get(pk=d["id"])
         obj.count_data = d["count_data"]
         features.append(obj)
-    return render(request, "feature/feature_list.html", {"features": features, "querys": data})
+    return render(
+        request,
+        "feature/feature_list.html",
+        {
+            "features": features,
+            "count_data": len(features),
+            "header": "All Features",
+        },
+    )
 
 
 def create_feature(request):
@@ -62,7 +71,7 @@ def create_feature(request):
 def update_feature(request, pk):
     feature = get_object_or_404(Feature, pk=pk)
     if request.method == "POST":
-        form = FeatureForm(request.POST, instance=feature)
+        form = FeatureEditForm(request.POST, instance=feature)
         if form.is_valid():
             form.save()
             return HttpResponse(
@@ -70,7 +79,7 @@ def update_feature(request, pk):
                 headers={"HX-Trigger": "featureListChanged"},
             )
     else:
-        form = FeatureForm(instance=feature)
+        form = FeatureEditForm(instance=feature)
     return render(
         request,
         "feature/feature_form.html",
@@ -97,12 +106,70 @@ def update_feature_tag(request, pk):
     )
 
 
+def get_feature_by_tag(request, pk):
+    return render(
+        request,
+        "feature/features.html",
+        {"access_by": "tag", "id": pk},
+    )
+
+
+def list_feature_by_tag(request, pk):
+    features = Feature.objects.filter(tag_ids=pk).prefetch_related("tag_ids")
+
+    feature_objs = []
+    for f in features:
+        f.count_data = Feedback.objects.filter(feature_id=f).count()
+        feature_objs.append(f)
+    return render(
+        request,
+        "feature/feature_list.html",
+        {"features": feature_objs, "header": "Filtered Features", "count_data": len(features)},
+    )
+
+
+def get_feature_by_user(request, pk):
+    return render(
+        request,
+        "feature/features.html",
+        {"access_by": "user", "id": pk},
+    )
+
+
+def list_feature_by_user(request, pk):
+
+    query = """
+        SELECT ff.id, ff.name, x.count_data FROM feedback_feature AS ff
+        LEFT JOIN(
+            SELECT feature_id_id , count(*) AS count_data FROM feedback_feedback GROUP BY feature_id_id
+        )x on x.feature_id_id = ff.id
+        WHERE ff.id in (
+            SELECT feature_id_id FROM feedback_feedback WHERE user_id_id = %s GROUP BY feature_id_id
+        )    
+    """
+
+    cursor = connection.cursor()
+    cursor.execute(query, [pk])
+    data = dictfetchall(cursor)
+    cursor.close()
+    return render(
+        request,
+        "feature/feature_list.html",
+        {"features": data, "header": "Filtered Features", "count_data": len(data)},
+    )
+
+
 def tags(request):
     return render(request, "tag/tags.html")
 
 
 def tag_list(request):
-    return render(request, "tag/tag_list.html", {"tags": Tag.objects.all()})
+    tags = Tag.objects.all()
+    tag_objs = []
+    for t in tags:
+        t.count_data = Feature.objects.filter(tag_ids=t).count()
+        tag_objs.append(t)
+    return render(request, "tag/tag_list.html", {"tags": tag_objs, "count_data": tags.count()})
 
 
 def create_tag(request):
@@ -147,7 +214,24 @@ def users(request):
 
 
 def user_list(request):
-    return render(request, "user/user_list.html", {"users": ResUser.objects.all()})
+    query = """
+        SELECT fr.id , fr.name, fr.email,
+        CASE
+        WHEN x.count_data THEN x.count_data
+        ELSE 0
+        END AS count_data
+        FROM feedback_resuser AS fr
+        LEFT JOIN(
+            SELECT u.user_id_id, count(u.user_id_id) AS count_data FROM (
+                SELECT user_id_id, feature_id_id FROM feedback_feedback GROUP BY user_id_id, feature_id_id
+            ) AS u GROUP BY u.user_id_id
+        ) AS x on x.user_id_id = fr.id
+    """
+    cursor = connection.cursor()
+    cursor.execute(query)
+    data = dictfetchall(cursor)
+    cursor.close()
+    return render(request, "user/user_list.html", {"users": data, "count_data": len(data)})
 
 
 def create_user(request):
@@ -221,7 +305,7 @@ def create_feedback(request, pk):
     )
 
 
-def get_feedbacks(request, pk):
+def get_feedbacks_by_feature(request, pk):
     feedbacks = Feedback.objects.filter(feature_id=pk)
     feature = Feature.objects.get(pk=pk)
     count = feedbacks.count()

@@ -1,11 +1,30 @@
-{% for tag in tags %}
-<tr>
-    <td colspan="10">
-        {{tag.name}}
-        (<button hx-get="{% url 'feedback:tag-update' tag.id %}" hx-target="#dialog"
-            class="unstyled-button">edit</button>)
-        </th>
-    <td colspan="2">0</td>
+<h1>All Tags ({{count_data}})</h1>
+<div>
+    <button id="" type="button" class="btn btn-outline-info float-end" hx-get="{% url 'feedback:tag-create' %}"
+        hx-target="#dialog">
+        Create Tag
+    </button>
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th colspan="10">Name</th>
+            <th colspan="2">Total Tagged Features</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tag in tags %}
+        <tr>
+            <td colspan="10">
+                {{tag.name}}
+                (<button hx-get="{% url 'feedback:tag-update' tag.id %}" hx-target="#dialog"
+                    class="unstyled-button">edit</button>)
+                </th>
+            <td colspan="2">
+                <a href="{% url 'feedback:feature-by-tag' tag.id %}">{{tag.count_data}}</a>
+            </td>
 
-</tr>
-{% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

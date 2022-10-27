@@ -16,6 +16,12 @@ class FeatureForm(forms.ModelForm):
         tag_ids = forms.ModelMultipleChoiceField(queryset=Tag.objects.all())
 
 
+class FeatureEditForm(forms.ModelForm):
+    class Meta:
+        fields = ("name",)
+        model = Feature
+
+
 class TagForm(forms.ModelForm):
     class Meta:
         fields = (

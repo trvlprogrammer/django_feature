@@ -6,31 +6,9 @@ Users
 {% endblock page_title %}
 
 {% block contents %}
+<a href="{{ request.META.HTTP_REFERER }}">Back</a>
+<div hx-get="{% url 'feedback:user-list' %}" hx-trigger="load, userListChanged from:body" hx-target="this">
 
-<div>
-    <h1>All Users (Count of users)</h1>
-    <div>
-        <button id="" type="button" class="btn btn-outline-info float-end" hx-get="{% url 'feedback:user-create' %}"
-            hx-target="#dialog">
-            Create User
-        </button>
-    </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th colspan="5">Name</th>
-                <th colspan="5">Email</th>
-                <th colspan="2">Features</th>
-            </tr>
-        </thead>
-        <tbody hx-get="{% url 'feedback:user-list' %}" hx-trigger="load, userListChanged from:body" hx-target="this">
-        </tbody>
-    </table>
 </div>
-
-<div id="modal" class="modal fade" tabindex="-1">
-    <div id="dialog" class="modal-dialog" hx-target="this"></div>
-</div>
-
 
 {% endblock contents %}

@@ -14,12 +14,12 @@
             <label for="{{ form.color.id_for_label }}" class="form-label">Color</label>
             {% render_field form.color class="form-control" placeholder="Color Code" %}
         </div>
-    </div>
-    <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">{{button}}</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            Cancel
-        </button>
+        <div class="mb-3 float-start">
+            <button type="submit" class="btn btn-primary">{{button}}</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                Cancel
+            </button>
+        </div>
     </div>
 </form>
 {% endwith %}

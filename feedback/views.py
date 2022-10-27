@@ -15,10 +15,10 @@ def dictfetchall(cursor):
 
 
 def features(request):
-    return render(request, "feature/features.html", {"access_by": "index"})
+    return render(request, "feature/features.html", {"access_by": "index", "state": "asc"})
 
 
-def feature_list(request):
+def feature_list(request, state):
     query = """
         SELECT ff.id,
         CASE 
@@ -41,13 +41,21 @@ def feature_list(request):
         obj = Feature.objects.get(pk=d["id"])
         obj.count_data = d["count_data"]
         features.append(obj)
+
+    if state == "desc":
+        newlist = sorted(features, key=lambda x: x.count_data, reverse=True)
+    else:
+        state = "asc"
+        newlist = sorted(features, key=lambda x: x.count_data)
     return render(
         request,
         "feature/feature_list.html",
         {
-            "features": features,
+            "features": newlist,
             "count_data": len(features),
             "header": "All Features",
+            "state": state,
+            "access_by": "index",
         },
     )
 
@@ -112,21 +120,34 @@ def get_feature_by_tag(request, pk):
     return render(
         request,
         "feature/features.html",
-        {"access_by": "tag", "id": pk},
+        {"access_by": "tag", "id": pk, "state": "asc"},
     )
 
 
-def list_feature_by_tag(request, pk):
+def list_feature_by_tag(request, pk, state):
     features = Feature.objects.filter(tag_ids=pk).prefetch_related("tag_ids")
 
     feature_objs = []
     for f in features:
         f.count_data = Feedback.objects.filter(feature_id=f).count()
         feature_objs.append(f)
+
+    if state == "desc":
+        newlist = sorted(features, key=lambda x: x.count_data, reverse=True)
+    else:
+        state = "asc"
+        newlist = sorted(features, key=lambda x: x.count_data)
     return render(
         request,
         "feature/feature_list.html",
-        {"features": feature_objs, "header": "Filtered Features", "count_data": len(features)},
+        {
+            "features": newlist,
+            "header": "Filtered Features",
+            "count_data": len(features),
+            "state": state,
+            "access_by": "tag",
+            "id": pk,
+        },
     )
 
 
@@ -134,11 +155,11 @@ def get_feature_by_user(request, pk):
     return render(
         request,
         "feature/features.html",
-        {"access_by": "user", "id": pk},
+        {"access_by": "user", "id": pk, "state": "asc"},
     )
 
 
-def list_feature_by_user(request, pk):
+def list_feature_by_user(request, pk, state):
 
     query = """
         SELECT ff.id, ff.name, x.count_data FROM feedback_feature AS ff
@@ -154,10 +175,22 @@ def list_feature_by_user(request, pk):
     cursor.execute(query, [pk])
     data = dictfetchall(cursor)
     cursor.close()
+    if state == "desc":
+        newlist = sorted(data, key=itemgetter("name"), reverse=True)
+    else:
+        state = "asc"
+        newlist = sorted(data, key=itemgetter("name"))
     return render(
         request,
         "feature/feature_list.html",
-        {"features": data, "header": "Filtered Features", "count_data": len(data)},
+        {
+            "features": newlist,
+            "header": "Filtered Features",
+            "count_data": len(data),
+            "state": state,
+            "access_by": "user",
+            "id": pk,
+        },
     )
 
 

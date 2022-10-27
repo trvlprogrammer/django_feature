@@ -9,7 +9,27 @@
     <thead>
         <tr>
             <th colspan="10" class="col-10">Name</th>
-            <th colspan="2" class="col-2">Total Feedback</th>
+            <th colspan="2" class="col-2">Total Feedback
+                {% if access_by == "index" %}
+                {% if state == "asc" %}
+                <a href="#" hx-get="{% url 'feedback:feature-list' 'desc' %}">Sort</a>
+                {% else %}
+                <a href="#" hx-get="{% url 'feedback:feature-list' 'asc' %}">Sort</a>
+                {% endif %}
+                {% elif access_by == "tag" %}
+                {% if state == "asc" %}
+                <a href="#" hx-get="{% url 'feedback:list-feature-by-tag' pk=id state='desc' %}">Sort</a>
+                {% else %}
+                <a href="#" hx-get="{% url 'feedback:list-feature-by-tag' pk=id state='asc' %}">Sort</a>
+                {% endif %}
+                {% elif access_by == "user" %}
+                {% if state == "asc" %}
+                <a href="#" hx-get="{% url 'feedback:list-feature-by-user' pk=id state='desc' %}">Sort</a>
+                {% else %}
+                <a href="#" hx-get="{% url 'feedback:list-feature-by-user' pk=id state='asc' %}">Sort</a>
+                {% endif %}
+                {% endif %}
+            </th>
         </tr>
     </thead>
     <tbody>

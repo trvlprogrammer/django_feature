@@ -8,15 +8,15 @@ Features
 {% block contents %}
 <a href="{{ request.META.HTTP_REFERER }}">Back</a>
 {% if access_by == "tag" %}
-<div hx-get="{% url 'feedback:list-feature-by-tag' id %}" hx-trigger="load, featureListChanged from:body"
+<div hx-get="{% url 'feedback:list-feature-by-tag' pk=id state=state %}" hx-trigger="load, featureListChanged from:body"
     hx-target="this">
 </div>
 {% elif access_by == "user" %}
-<div hx-get="{% url 'feedback:list-feature-by-user' id %}" hx-trigger="load, featureListChanged from:body"
-    hx-target="this">
+<div hx-get="{% url 'feedback:list-feature-by-user' pk=id state=state %}"
+    hx-trigger="load, featureListChanged from:body" hx-target="this">
 </div>
 {% else %}
-<div hx-get="{% url 'feedback:feature-list' %}" hx-trigger="load, featureListChanged from:body" hx-target="this">
+<div hx-get="{% url 'feedback:feature-list' state %}" hx-trigger="load, featureListChanged from:body" hx-target="this">
 </div>
 {% endif %}
 

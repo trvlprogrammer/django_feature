@@ -7,7 +7,7 @@ Tags
 
 {% block contents %}
 <a href="{{ request.META.HTTP_REFERER }}">Back</a>
-<div hx-get="{% url 'feedback:tag-list' %}" hx-trigger="load, tagListChanged from:body" hx-target="this">
+<div hx-get="{% url 'feedback:tag-list' state %}" hx-trigger="load, tagListChanged from:body" hx-target="this">
 
 </div>
 

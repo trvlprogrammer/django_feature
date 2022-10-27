@@ -162,16 +162,23 @@ def list_feature_by_user(request, pk):
 
 
 def tags(request):
-    return render(request, "tag/tags.html")
+    return render(request, "tag/tags.html", {"state": "asc"})
 
 
-def tag_list(request):
+def tag_list(request, state):
     tags = Tag.objects.all()
     tag_objs = []
     for t in tags:
         t.count_data = Feature.objects.filter(tag_ids=t).count()
         tag_objs.append(t)
-    return render(request, "tag/tag_list.html", {"tags": tag_objs, "count_data": tags.count()})
+
+    if state == "desc":
+        newlist = sorted(tag_objs, key=lambda x: x.count_data, reverse=True)
+    else:
+        state = "asc"
+        newlist = sorted(tag_objs, key=lambda x: x.count_data)
+
+    return render(request, "tag/tag_list.html", {"tags": newlist, "count_data": tags.count(), "state": state})
 
 
 def create_tag(request):
@@ -234,10 +241,10 @@ def user_list(request, state):
     data = dictfetchall(cursor)
     cursor.close()
     if state == "desc":
-        newlist = sorted(data, key=itemgetter("count_data"))
+        newlist = sorted(data, key=itemgetter("count_data"), reverse=True)
     else:
         state = "asc"
-        newlist = sorted(data, key=itemgetter("count_data"), reverse=True)
+        newlist = sorted(data, key=itemgetter("count_data"))
     return render(request, "user/user_list.html", {"users": newlist, "count_data": len(data), "state": state})
 
 

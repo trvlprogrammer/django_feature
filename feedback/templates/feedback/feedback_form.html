@@ -17,7 +17,7 @@
         </div>
         <div class="mb-3">
             <label for="{{ form.user_id.id_for_label }}" class="form-label">User</label>
-            {% render_field form.user_id class="form-control my-select2" placeholder="Feedback" %}
+            {% render_field form.user_id class="form-control many2one" placeholder="Feedback" %}
         </div>
 
         <div class="mb-3 float-start">
@@ -31,21 +31,15 @@
 {% endwith %}
 
 <script>
-    // $(document).ready(function () {
-    //     $('.many2one').select2();
-    // });
-
     jQuery(function () {
 
-        $('.my-select2').each(function () {
+        $('.many2one').each(function () {
             $(this).select2({
                 theme: "bootstrap-5",
-                dropdownParent: $(this).parent(), // fix select2 search input focus bug
+                dropdownParent: $(this).parent(),
             })
         })
-
-        // fix select2 bootstrap modal scroll bug
-        $(document).on('select2:close', '.my-select2', function (e) {
+        $(document).on('select2:close', '.many2one', function (e) {
             var evt = "scroll.select2"
             $(e.target).parents().off(evt)
             $(window).off(evt)

@@ -20,7 +20,7 @@
         </div>
         <div class="mb-3">
             <label for="{{ form.tag_ids.id_for_label }}" class="form-label">Tags</label>
-            {% render_field form.tag_ids class="form-control widget-many2many-tags" placeholder="Tags" %}
+            {% render_field form.tag_ids class="form-control my-select2" placeholder="Tags" %}
         </div>
         {% endif %}
         <div class="mb-3 float-start">
@@ -32,3 +32,25 @@
     </div>
 </form>
 {% endwith %}
+
+
+<script>
+
+    jQuery(function () {
+
+        $('.my-select2').each(function () {
+            $(this).select2({
+                theme: "bootstrap-5",
+                dropdownParent: $(this).parent(), // fix select2 search input focus bug
+            })
+        })
+
+        // fix select2 bootstrap modal scroll bug
+        $(document).on('select2:close', '.my-select2', function (e) {
+            var evt = "scroll.select2"
+            $(e.target).parents().off(evt)
+            $(window).off(evt)
+        })
+
+    })
+</script>

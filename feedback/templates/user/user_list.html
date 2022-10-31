@@ -10,9 +10,9 @@
         <tr>
             <th colspan="5" class="col-5">Name
                 {% if state == "asc" %}
-                <a href="#" hx-get="{% url 'feedback:user-list' 'desc' %}">Sort</a>
+                <a href="#" hx-get="{% url 'feedback:user-list' 'desc' %}" class="fa fa-sort-desc"></a>
                 {% else %}
-                <a href="#" hx-get="{% url 'feedback:user-list' 'asc' %}">Sort</a>
+                <a href="#" hx-get="{% url 'feedback:user-list' 'asc' %}" class="fa fa-sort-asc"></a>
                 {% endif %}
             </th>
             <th colspan="5" class="col-5">Email</th>

@@ -11,7 +11,8 @@ Feedback
     <h1>Feedback for {{feature.name}} ({{count}})</h1>
     <div class="mb-3 mt-2">
         {% for tag in feature.tag_ids.all %}
-        <a href="{% url 'feedback:feature-by-tag' tag.id %}">[{{tag.name}}]</a>
+        <a href="{% url 'feedback:feature-by-tag' tag.id %}" class="badge rounded-pill"
+            style="background-color: {{tag.color}};">{{tag.name}}</a>
         {% endfor %}
     </div>
 

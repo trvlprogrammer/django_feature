@@ -176,11 +176,17 @@ def list_feature_by_user(request, pk, state):
     cursor.execute(query, [pk])
     data = dictfetchall(cursor)
     cursor.close()
+
+    features = []
+    for d in data:
+        obj = Feature.objects.get(pk=d["id"])
+        obj.count_data = d["count_data"]
+        features.append(obj)
     if state == "desc":
-        newlist = sorted(data, key=itemgetter("name"), reverse=True)
+        newlist = sorted(features, key=lambda x: x.count_data, reverse=True)
     else:
         state = "asc"
-        newlist = sorted(data, key=itemgetter("name"))
+        newlist = sorted(features, key=lambda x: x.count_data)
     return render(
         request,
         "feature/feature_list.html",

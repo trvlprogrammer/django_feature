@@ -42,7 +42,8 @@
             <td colspan="10">
                 {{feature.name}}
                 {% for tag in feature.tag_ids.all %}
-                <a href="{% url 'feedback:feature-by-tag' tag.id %}">[{{tag.name}}]</a>
+                <a href="{% url 'feedback:feature-by-tag' tag.id %}" class="badge rounded-pill"
+                    style="background-color: {{tag.color}};">{{tag.name}}</a>
                 {% endfor %}
                 (<button hx-get="{% url 'feedback:feature-update' feature.id %}" hx-target="#dialog"
                     class="unstyled-button">edit</button>)

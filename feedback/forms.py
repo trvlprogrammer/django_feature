@@ -1,5 +1,3 @@
-from tkinter import Widget
-
 from django import forms
 
 from .models import Feature, Feedback, ResUser, Tag
@@ -29,6 +27,9 @@ class TagForm(forms.ModelForm):
             "color",
         )
         model = Tag
+        widgets = {
+            "color": forms.widgets.TextInput(attrs={"type": "color"}),
+        }
 
 
 class UserForm(forms.ModelForm):
@@ -45,4 +46,3 @@ class FeedbackForm(forms.ModelForm):
         fields = ("user_id", "description", "feature_id")
         widgets = {"description": forms.Textarea(attrs={"rows": 3, "cols": 10})}
         model = Feedback
-        # description = forms.CharField(widget=forms.Textarea(attrs={"rows": 3, "cols": 10}))

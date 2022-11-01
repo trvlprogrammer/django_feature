@@ -43,6 +43,10 @@ class ResUser(models.Model):
     def __str__(self):
         return f"{self.name} ({self.email})"
 
+    def get_feature_count(self):
+
+        return Feedback.objects.values("feature_id").filter(user_id=self.id).distinct().count()
+
 
 class Feedback(models.Model):
     user_id = models.ForeignKey(ResUser, on_delete=models.CASCADE, null=True, blank=True)

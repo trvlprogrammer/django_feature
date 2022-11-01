@@ -220,17 +220,7 @@ def users(request):
 
 def user_list(request, state):
     users = ResUser.objects.all()
-    if state == "desc":
-        users = users.order_by("-name")
-    else:
-        state = "asc"
-        users = users.order_by("name")
-    new_list = []
-
-    for user in users:
-        user.count_data = Feedback.objects.filter(user_id=user).values("feature_id").distinct().count()
-        new_list.append(user)
-    return render(request, "user/user_list.html", {"users": new_list, "count_data": users.count(), "state": state})
+    return render(request, "user/user_list.html", {"users": users, "count_data": users.count(), "state": state})
 
 
 def create_user(request):

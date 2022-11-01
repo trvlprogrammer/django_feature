@@ -30,7 +30,7 @@
                 </th>
             <td colspan="5">{{user.email}}</td>
             <td colspan="2">
-                <a href="{% url 'feedback:feature-by-user' user.id %}">{{user.count_data}}</a>
+                <a href="{% url 'feedback:feature-by-user' user.id %}">{{user.get_feature_count}}</a>
             </td>
 
         </tr>

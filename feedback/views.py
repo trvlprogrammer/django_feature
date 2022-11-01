@@ -179,19 +179,13 @@ def tags(request):
 
 
 def tag_list(request, state):
-    tags = Tag.objects.all()
-    tag_objs = []
-    for t in tags:
-        t.count_data = Feature.objects.filter(tag_ids=t).count()
-        tag_objs.append(t)
-
     if state == "desc":
-        newlist = sorted(tag_objs, key=lambda x: x.count_data, reverse=True)
+        newlist = Tag.objects.all().annotate(Count("feature")).order_by("-feature__count")
     else:
         state = "asc"
-        newlist = sorted(tag_objs, key=lambda x: x.count_data)
+        newlist = Tag.objects.all().annotate(Count("feature")).order_by("feature__count")
 
-    return render(request, "tag/tag_list.html", {"tags": newlist, "count_data": tags.count(), "state": state})
+    return render(request, "tag/tag_list.html", {"tags": newlist, "count_data": newlist.count(), "state": state})
 
 
 def create_tag(request):

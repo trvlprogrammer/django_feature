@@ -298,7 +298,7 @@ def create_feedback(request, pk):
 
 def get_feedbacks_by_feature(request, pk):
     feedbacks = Feedback.objects.filter(feature_id=pk).select_related("user_id", "feature_id")
-    feature = Feature.objects.get(pk=pk)
+    feature = Feature.objects.prefetch_related("tag_ids").get(pk=pk)
     count = feedbacks.count()
     return render(
         request,

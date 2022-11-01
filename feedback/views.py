@@ -1,6 +1,3 @@
-from operator import itemgetter
-
-from django.db import connection
 from django.db.models import Count, Prefetch
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -300,7 +297,7 @@ def create_feedback(request, pk):
 
 
 def get_feedbacks_by_feature(request, pk):
-    feedbacks = Feedback.objects.filter(feature_id=pk)
+    feedbacks = Feedback.objects.filter(feature_id=pk).select_related("user_id", "feature_id")
     feature = Feature.objects.get(pk=pk)
     count = feedbacks.count()
     return render(

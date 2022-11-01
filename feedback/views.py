@@ -220,6 +220,11 @@ def users(request):
 
 def user_list(request, state):
     users = ResUser.objects.all()
+    if state == "desc":
+        users = users.order_by("-name")
+    else:
+        state = "asc"
+        users = users.order_by("name")
     return render(request, "user/user_list.html", {"users": users, "count_data": users.count(), "state": state})
 
 

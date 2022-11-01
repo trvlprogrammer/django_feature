@@ -17,3 +17,7 @@ How to setup :
 
 How to run test:
 - cd to root folder and type `pytest`
+
+Features :
+- HTMX
+- Django Debug Toolbar

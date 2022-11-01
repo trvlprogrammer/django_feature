@@ -1,6 +1,7 @@
 from operator import itemgetter
 
 from django.db import connection
+from django.db.models import Count, Prefetch
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
@@ -19,39 +20,18 @@ def features(request):
 
 
 def feature_list(request, state):
-    query = """
-        SELECT ff.id,
-        CASE 
-        WHEN x.count_data THEN x.count_data
-        ELSE 0
-        END AS count_data
-        FROM feedback_feature AS ff
-        LEFT JOIN(
-            SELECT  COUNT(*) AS count_data, feature_id_id FROM feedback_feedback
-            GROUP BY feature_id_id
-        )x on ff.id = x.feature_id_id
-    """
-
-    cursor = connection.cursor()
-    cursor.execute(query)
-    data = dictfetchall(cursor)
-    cursor.close()
-    features = []
-    for d in data:
-        obj = Feature.objects.get(pk=d["id"])
-        obj.count_data = d["count_data"]
-        features.append(obj)
+    features = Feature.objects.all().annotate(Count("feedback")).prefetch_related("tag_ids")
 
     if state == "desc":
-        newlist = sorted(features, key=lambda x: x.count_data, reverse=True)
+        new_list = features.order_by("-feedback__count")
     else:
         state = "asc"
-        newlist = sorted(features, key=lambda x: x.count_data)
+        new_list = features.order_by("feedback__count")
     return render(
         request,
         "feature/feature_list.html",
         {
-            "features": newlist,
+            "features": new_list,
             "count_data": len(features),
             "header": "All Features",
             "state": state,
@@ -125,23 +105,18 @@ def get_feature_by_tag(request, pk):
 
 
 def list_feature_by_tag(request, pk, state):
-    features = Feature.objects.filter(tag_ids=pk).prefetch_related("tag_ids")
+    features = Feature.objects.filter(tag_ids=pk).annotate(Count("feedback")).prefetch_related("tag_ids")
     tag = Tag.objects.get(pk=pk)
-    feature_objs = []
-    for f in features:
-        f.count_data = Feedback.objects.filter(feature_id=f).count()
-        feature_objs.append(f)
-
     if state == "desc":
-        newlist = sorted(features, key=lambda x: x.count_data, reverse=True)
+        new_list = features.order_by("-feedback__count")
     else:
         state = "asc"
-        newlist = sorted(features, key=lambda x: x.count_data)
+        new_list = features.order_by("feedback__count")
     return render(
         request,
         "feature/feature_list.html",
         {
-            "features": newlist,
+            "features": new_list,
             "header": "Filtered Features",
             "count_data": len(features),
             "state": state,
@@ -161,39 +136,20 @@ def get_feature_by_user(request, pk):
 
 
 def list_feature_by_user(request, pk, state):
-
-    query = """
-        SELECT ff.id, ff.name, x.count_data FROM feedback_feature AS ff
-        LEFT JOIN(
-            SELECT feature_id_id , count(*) AS count_data FROM feedback_feedback GROUP BY feature_id_id
-        )x on x.feature_id_id = ff.id
-        WHERE ff.id in (
-            SELECT feature_id_id FROM feedback_feedback WHERE user_id_id = %s GROUP BY feature_id_id
-        )    
-    """
-
-    cursor = connection.cursor()
-    cursor.execute(query, [pk])
-    data = dictfetchall(cursor)
-    cursor.close()
-
-    features = []
-    for d in data:
-        obj = Feature.objects.get(pk=d["id"])
-        obj.count_data = d["count_data"]
-        features.append(obj)
+    feedback_ids = Feedback.objects.filter(user_id_id=pk).values("feature_id").distinct()
+    features = Feature.objects.filter(id__in=feedback_ids).annotate(Count("feedback")).prefetch_related("tag_ids")
     if state == "desc":
-        newlist = sorted(features, key=lambda x: x.count_data, reverse=True)
+        new_list = features.order_by("-feedback__count")
     else:
         state = "asc"
-        newlist = sorted(features, key=lambda x: x.count_data)
+        new_list = features.order_by("feedback__count")
     return render(
         request,
         "feature/feature_list.html",
         {
-            "features": newlist,
+            "features": new_list,
             "header": "Filtered Features",
-            "count_data": len(data),
+            "count_data": features.count(),
             "state": state,
             "access_by": "user",
             "id": pk,
@@ -263,29 +219,18 @@ def users(request):
 
 
 def user_list(request, state):
-    query = """
-        SELECT fr.id , fr.name, fr.email,
-        CASE
-        WHEN x.count_data THEN x.count_data
-        ELSE 0
-        END AS count_data
-        FROM feedback_resuser AS fr
-        LEFT JOIN(
-            SELECT u.user_id_id, count(u.user_id_id) AS count_data FROM (
-                SELECT user_id_id, feature_id_id FROM feedback_feedback GROUP BY user_id_id, feature_id_id
-            ) AS u GROUP BY u.user_id_id
-        ) AS x on x.user_id_id = fr.id
-    """
-    cursor = connection.cursor()
-    cursor.execute(query)
-    data = dictfetchall(cursor)
-    cursor.close()
+    users = ResUser.objects.all()
     if state == "desc":
-        newlist = sorted(data, key=itemgetter("name"), reverse=True)
+        users = users.order_by("-name")
     else:
         state = "asc"
-        newlist = sorted(data, key=itemgetter("name"))
-    return render(request, "user/user_list.html", {"users": newlist, "count_data": len(data), "state": state})
+        users = users.order_by("name")
+    new_list = []
+
+    for user in users:
+        user.count_data = Feedback.objects.filter(user_id=user).values("feature_id").distinct().count()
+        new_list.append(user)
+    return render(request, "user/user_list.html", {"users": new_list, "count_data": users.count(), "state": state})
 
 
 def create_user(request):

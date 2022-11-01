@@ -17,19 +17,21 @@ def features(request):
 
 
 def feature_list(request, state):
-    features = Feature.objects.all().annotate(Count("feedback")).prefetch_related("tag_ids")
-
     if state == "desc":
-        new_list = features.order_by("-feedback__count")
+        new_list = (
+            Feature.objects.all().annotate(Count("feedback")).prefetch_related("tag_ids").order_by("-feedback__count")
+        )
     else:
         state = "asc"
-        new_list = features.order_by("feedback__count")
+        new_list = (
+            Feature.objects.all().annotate(Count("feedback")).prefetch_related("tag_ids").order_by("feedback__count")
+        )
     return render(
         request,
         "feature/feature_list.html",
         {
             "features": new_list,
-            "count_data": len(features),
+            "count_data": len(new_list),
             "header": "All Features",
             "state": state,
             "access_by": "index",
@@ -102,20 +104,29 @@ def get_feature_by_tag(request, pk):
 
 
 def list_feature_by_tag(request, pk, state):
-    features = Feature.objects.filter(tag_ids=pk).annotate(Count("feedback")).prefetch_related("tag_ids")
     tag = Tag.objects.get(pk=pk)
     if state == "desc":
-        new_list = features.order_by("-feedback__count")
+        new_list = (
+            Feature.objects.filter(tag_ids=pk)
+            .annotate(Count("feedback"))
+            .prefetch_related("tag_ids")
+            .order_by("-feedback__count")
+        )
     else:
         state = "asc"
-        new_list = features.order_by("feedback__count")
+        new_list = (
+            Feature.objects.filter(tag_ids=pk)
+            .annotate(Count("feedback"))
+            .prefetch_related("tag_ids")
+            .order_by("feedback__count")
+        )
     return render(
         request,
         "feature/feature_list.html",
         {
             "features": new_list,
             "header": "Filtered Features",
-            "count_data": len(features),
+            "count_data": len(new_list),
             "state": state,
             "access_by": "tag",
             "id": pk,
@@ -134,19 +145,28 @@ def get_feature_by_user(request, pk):
 
 def list_feature_by_user(request, pk, state):
     feedback_ids = Feedback.objects.filter(user_id_id=pk).values("feature_id").distinct()
-    features = Feature.objects.filter(id__in=feedback_ids).annotate(Count("feedback")).prefetch_related("tag_ids")
     if state == "desc":
-        new_list = features.order_by("-feedback__count")
+        new_list = (
+            Feature.objects.filter(id__in=feedback_ids)
+            .annotate(Count("feedback"))
+            .prefetch_related("tag_ids")
+            .order_by("-feedback__count")
+        )
     else:
         state = "asc"
-        new_list = features.order_by("feedback__count")
+        new_list = (
+            Feature.objects.filter(id__in=feedback_ids)
+            .annotate(Count("feedback"))
+            .prefetch_related("tag_ids")
+            .order_by("feedback__count")
+        )
     return render(
         request,
         "feature/feature_list.html",
         {
             "features": new_list,
             "header": "Filtered Features",
-            "count_data": features.count(),
+            "count_data": new_list.count(),
             "state": state,
             "access_by": "user",
             "id": pk,
@@ -216,12 +236,12 @@ def users(request):
 
 
 def user_list(request, state):
-    users = ResUser.objects.all()
+
     if state == "desc":
-        users = users.order_by("-name")
+        users = ResUser.objects.all().order_by("-name")
     else:
         state = "asc"
-        users = users.order_by("name")
+        users = ResUser.objects.all().order_by("name")
     return render(request, "user/user_list.html", {"users": users, "count_data": users.count(), "state": state})
 
 
